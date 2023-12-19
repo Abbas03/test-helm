@@ -1,0 +1,55 @@
+# Please edit the object below. Lines beginning with a '#' will be ignored,
+# and an empty file will abort the edit. If an error occurs while saving this file will be
+# reopened with the relevant failures.
+#
+apiVersion: v1
+data:
+  context: |
+    argocdUrl: localhost:8080
+  service.slack: |
+    token: $slack-token
+  defaultTrigger: |
+    - on-deployed
+  trigger.on-deployed: |
+    - description: test
+      oncePer: app.status.sync.revision
+      send:
+      - app-sync-status
+      when: app.status.sync.status in ['Synced'] and app.status.health.status == 'Healthy'
+  template.app-sync-status: |
+    message: |
+      Application {{.app.metadata.name}} sync is {{.app.status.sync.status}}.
+      Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}.
+    slack:
+      attachments: |
+        [{
+          "title": "{{.app.metadata.name}}",
+          "title_link": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+          "color": "#18be52",
+          "fields": [{
+            "title": "Sync Status",
+            "value": "{{.app.status.sync.status}}",
+            "short": true
+          }, {
+            "title": "Repository",
+            "value": "{{.app.spec.source.repoURL}}",
+            "short": true
+          }]
+        }]
+kind: ConfigMap
+metadata:
+  annotations:
+    meta.helm.sh/release-name: my-argo-cd
+    meta.helm.sh/release-namespace: default
+  creationTimestamp: "2023-12-19T11:52:35Z"
+  labels:
+    app.kubernetes.io/component: notifications-controller
+    app.kubernetes.io/instance: my-argo-cd
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: argocd-notifications-controller
+    app.kubernetes.io/part-of: argocd
+    helm.sh/chart: argo-cd-5.27.3
+  name: argocd-notifications-cm
+  namespace: default
+  resourceVersion: "7826773"
+  uid: adea9f2a-001e-43c0-99d0-c8d57f88fc4c

@@ -2,6 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "nginx-test.fullname" . }}
+  annotations:
+    notifications.argoproj.io/subscribe.on-deployed.slack: temp
+    notifications.argoproj.io/subscribe.on-sync-failed.slack: temp
+    notifications.argoproj.io/subscribe.on-sync-succeeded.slack: temp  
   labels:
     {{- include "nginx-test.labels" . | nindent 4 }}
 spec:

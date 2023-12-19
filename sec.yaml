@@ -1,0 +1,7 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: argocd-notifications-secret
+stringData:
+  slack-token: xoxb-6360660061894-6365133606693-MAEglzf0VKj0LSwnPKrZ2B4H
